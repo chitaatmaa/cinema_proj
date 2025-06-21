@@ -2,62 +2,39 @@ package main
 
 import (
 	"cinema_proj/back/dbx"
-	"fmt"
+	"cinema_proj/back/handlers"
 	"log"
 	"net/http"
-	"os"
-	"syscall"
-
-	"golang.org/x/term"
 )
 
-func getPassword() (string, error) {
-	fmt.Print("Введите пароль от БД: ")
-	bytePassword, err := term.ReadPassword(int(syscall.Stdin))
-	fmt.Println()
-	if err != nil {
-		return "", err
-	}
-	return string(bytePassword), nil
-}
-
 func main() {
-	pass := os.Getenv("DB_PASSWORD")
-	if pass == "" {
-		var err error
-		pass, err = getPassword()
-		if err != nil {
-			log.Fatal("Ошибка чтения пароля:", err)
-		}
-	}
+	dbx.ConnToDB()
+	defer dbx.DB.Close()
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("front/static"))))
 
-	// Инициализация БД
-	connStr := fmt.Sprintf("host=localhost port=5432 user=postgres dbname=cinema password=%s sslmode=disable", pass)
-	if err := dbx.InitDB(connStr); err != nil {
-		log.Fatalf("Ошибка инициализации БД: %v", err)
-	}
-	log.Println("Успешное подключение к БД")
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/main", dbx.ServeIndexHTML)
-	handler := corsMiddleware(mux)
-
-	serverAddr := ":8080"
-	log.Printf("Сервер запущен на %s", serverAddr)
-	log.Fatal(http.ListenAndServe(serverAddr, handler))
-}
-
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
+	// Роуты для регистрации/авторизации (Create, Read)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/auth", http.StatusFound)
 	})
+	http.HandleFunc("/auth", handlers.AuthHandler)
+	http.HandleFunc("/login", handlers.LoginHandler)
+	http.HandleFunc("/register", handlers.RegisterHandler)
+	http.HandleFunc("/logout", handlers.LogoutHandler)
+
+	// Роуты для работы администратора, продюссера, режиссёра
+	//Роуты для работы с пользователями (регистрация, удаление)
+	http.HandleFunc("/admin", handlers.AdminPanel)
+	http.HandleFunc("/admin/user_photo", handlers.GetUserPhotoHandler)
+	http.HandleFunc("/admin/user_data", handlers.GetUserDataHandler)
+	http.HandleFunc("/admin/search", handlers.SearchUsersHandler)
+	http.HandleFunc("/admin/delete", handlers.DeleteUserHandler)
+	//Роусты для добавления фильмов и привязки к ним продюссера и режиссера
+	http.HandleFunc("/admin/regis_data", handlers.GetRegisDataHandler)
+	http.HandleFunc("/admin/prod_data", handlers.GetProdDataHandler)
+	http.HandleFunc("/admin/create_film", handlers.AddMovieHandler)
+
+	log.Println("Server starting on :8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }

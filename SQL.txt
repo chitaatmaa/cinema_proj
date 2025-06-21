@@ -19,15 +19,20 @@ CREATE TABLE persons (
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     login VARCHAR(50) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
+    pass VARCHAR(255) NOT NULL,
     role_id INTEGER NOT NULL REFERENCES user_roles(id),
     person_id INTEGER NOT NULL UNIQUE REFERENCES persons(id)
+);
+
+CREATE TABLE genres (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE movies (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    genre VARCHAR(50) NOT NULL,
+    genre_id INTEGER NOT NULL REFERENCES genres(id),
     budget NUMERIC(15,2) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'pre-production',
     start_date DATE,
@@ -36,8 +41,7 @@ CREATE TABLE movies (
 
 CREATE TABLE crews (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    director_position VARCHAR(100) NOT NULL
+    name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE movie_crews (
@@ -76,3 +80,4 @@ CREATE INDEX idx_movie_crews_budget ON movie_crews(allocated_budget);
 CREATE INDEX idx_crews_name ON crews(name);
 CREATE INDEX idx_movie_actors_character ON movie_actors(character_name);
 CREATE INDEX idx_users_login ON users(login);
+CREATE INDEX idx_genres_name ON genres(name);
