@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель киностудии</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-film"></i>
+                <span>Киностудия "Админ Панель"</span>
+            </div>
+            <div class="admin-info" id="adminDropdown">
+                <img src="../static/images/default_user_photo.jpg" alt="User Photo" id="userPhoto">
+                <span id="admin_login" class="admin-name"></span>
+                <div class="dropdown-menu">
+                    <a href="/logout">Выйти из системы</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Регистрация нового пользователя</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <form id="userForm" method="POST" action="/admin" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Роль:
+                        <select name="role_id" required>
+                            {{range .}}
+                            <option value="{{.ID}}">{{.Name}}</option>
+                            {{end}}
+                        </select>
+                        </label><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Фамилия</label>
+                        <input type="text" id="lastName" placeholder="Last name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Имя</label>
+                        <input type="text" id="firstName" placeholder="First name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Отчество</label>
+                        <input type="text" id="middleName" placeholder="Middle name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Birth date</label>
+                        <input type="date" id="birthDate" placeholder="Birth date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Фото <input type="file" name="photo"></label><br>
+                    </div>
+                    <div class="form-group">
+                        <label>Опыт (лет)<input type="number" name="experience_years"></label><br>
+                    </div>
+                    <div class="form-group">
+                        <label for="login">User login</label>
+                        <input type="text" id="login" placeholder="Login" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pass">User password</label>
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Зарегистрировать пользователя
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-users"></i>
+                    <span>Удаление пользователя</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="form-group">
+                    <label for="searchLogin">Поиск пользователя по логину</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="searchLogin" placeholder="Введите логин пользователя" style="flex: 1;">
+                        <button id="searchUserBtn" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Поиск
+                        </button>
+                    </div>
+                </div>            
+                <div id="userResults" style="margin-top: 20px;">
+                    <!-- Результат поиска будет здесь -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Добавление нового фильма</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <form id="movieForm">
+                    <div class="form-group">
+                        <label for="movieTitle">Название фильма</label>
+                        <input type="text" id="movieTitle" placeholder="Введите название фильма" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="searchProducer">Поиск продюсера по логину</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="searchProducer" placeholder="Введите логин пользователя" style="flex: 1;">
+                            <button type="button" id="searchProdBtn" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Поиск
+                            </button>
+                        </div>
+                        <div id="prodResults" style="margin-top: 20px;">
+                            <!-- Результат поиска будет здесь -->
+                        </div>
+                    </div>      
+                    
+                    <div class="form-group">
+                        <label for="searchRegisser">Поиск режиссера по логину</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="searchRegisser" placeholder="Введите логин пользователя" style="flex: 1;">
+                            <button type="button" id="searchRegisBtn" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Поиск
+                            </button>
+                        </div>
+                        <div id="regisResults" style="margin-top: 20px;">
+                            <!-- Результат поиска будет здесь -->
+                        </div>
+                    </div>    
+                    
+                    <button type="button" id="addFilm" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Добавить фильм
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/admin.js"></script>
+    <script src="/static/js/film.js"></script>
+</body>
+</html>
