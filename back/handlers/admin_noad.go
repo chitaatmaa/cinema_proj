@@ -182,49 +182,35 @@ func GetRegisDataHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-type MovieRequest struct {
-	Title    string `json:"title"`
-	Producer string `json:"producer"`
-	Director string `json:"director"`
-}
-
-func AddMovieHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
+func MovieHandler(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Title    string `json:"title"`
+		GenreID  int    `json:"genre_id"`
+		StatusID int    `json:"status_id"`
+		Producer string `json:"producer"`
+		Regisser string `json:"regisser"`
 	}
 
-	var req MovieRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request data", http.StatusBadRequest)
+		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
-
-	tx, err := dbx.DB.Begin()
-	if err != nil {
-		log.Printf("Transaction begin error: %v", err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		return
-	}
-
 	var movieID int
-	err = tx.QueryRow(`
-		INSERT INTO cinema.movies (title, producer, regisser)
-		VALUES ($1, $2, $3)
-	`, req.Title, req.Producer, req.Director).Scan(&movieID)
+	err := dbx.DB.QueryRow(`
+        INSERT INTO cinema.movies (title, genre_id, status_id, producer, regisser)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id
+    `, req.Title, req.GenreID, req.StatusID, req.Producer, req.Regisser).Scan(&movieID)
 
 	if err != nil {
-		tx.Rollback()
-		log.Printf("Insert movie error: %v", err)
+		log.Printf("Database insert error: %v", err)
 		http.Error(w, "Failed to add movie", http.StatusInternalServerError)
 		return
 	}
-	if err := tx.Commit(); err != nil {
-		log.Printf("Transaction commit error: %v", err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		return
-	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"success": true})
+		"status":  "success",
+		"movieID": movieID,
+	})
 }

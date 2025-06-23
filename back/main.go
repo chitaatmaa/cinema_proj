@@ -12,7 +12,7 @@ func main() {
 	defer dbx.DB.Close()
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("front/static"))))
 
-	// Роуты для регистрации/авторизации (Create, Read)
+	// Общие роуты
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/auth", http.StatusFound)
 	})
@@ -21,17 +21,15 @@ func main() {
 	http.HandleFunc("/register", handlers.RegisterHandler)
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 
-	// Роуты для работы администратора, продюссера, режиссёра
-	//Роуты для работы с пользователями (регистрация, удаление)
+	// Админские роуты
 	http.HandleFunc("/admin", handlers.AdminPanel)
 	http.HandleFunc("/admin/user_photo", handlers.GetUserPhotoHandler)
 	http.HandleFunc("/admin/user_data", handlers.GetUserDataHandler)
 	http.HandleFunc("/admin/search", handlers.SearchUsersHandler)
 	http.HandleFunc("/admin/delete", handlers.DeleteUserHandler)
-	//Роусты для добавления фильмов и привязки к ним продюссера и режиссера
 	http.HandleFunc("/admin/regis_data", handlers.GetRegisDataHandler)
 	http.HandleFunc("/admin/prod_data", handlers.GetProdDataHandler)
-	http.HandleFunc("/admin/create_film", handlers.AddMovieHandler)
+	http.HandleFunc("/admin/create_film", handlers.MovieHandler)
 
 	log.Println("Server starting on :8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
