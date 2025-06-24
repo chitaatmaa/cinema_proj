@@ -1,1 +1,0 @@
-Есть проект (cinema_proj --> front, back, go.sum, go.mod --> (back): main.go, dbx, handlers; (front): static, templates). 
