@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель продюсера</title>
+    <link rel="stylesheet" href="/static/css/producer.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Панель продюсера</h1>
+        
+        <!-- Секция фильмов -->
+        <div class="section">
+            <h2>Ваши фильмы</h2>
+            <select id="movies-select">
+                <option value="">Выберите фильм</option>
+                <!-- Динамически заполняется -->
+            </select>
+            <div id="movie-info"></div>
+        </div>
+        
+        <!-- Форма обновления бюджета -->
+        <div class="section" id="budget-section" style="display:none;">
+            <h2>Установить бюджет</h2>
+            <input type="number" id="budget-input" min="0" step="1000">
+            <button onclick="updateBudget()">Обновить бюджет</button>
+            <p id="budget-message"></p>
+        </div>
+        
+        <!-- Отчеты -->
+        <div class="section">
+            <h2>Отчеты</h2>
+            <button onclick="downloadGroupsReport()">Скачать отчет по группам</button>
+            <button onclick="downloadDetailedReport()">Скачать детальный отчет</button>
+        </div>
+    </div>
+
+    <script src="/static/js/producer.js"></script>
+</body>
+</html>

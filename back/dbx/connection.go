@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -12,8 +13,9 @@ import (
 var DB *sql.DB
 
 func ConnToDB() {
-	connStr := "host=localhost port=5432 user=postgres password=7258 dbname=postgres sslmode=disable"
 	var err error
+	password := os.Getenv("DB_PASSWORD")
+	connStr := fmt.Sprintf("host=localhost port=5432 user=postgres password=%s dbname=postgres sslmode=disable", password)
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalf("Error opening DB: %v", err)

@@ -14,6 +14,8 @@ import (
 	"sync"
 )
 
+var tmpl = template.Must(template.ParseFiles("front/templates/admin.html"))
+
 func AdminPanel(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		if err := r.ParseMultipartForm(10 << 20); err != nil {
@@ -84,6 +86,16 @@ func AdminPanel(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write([]byte("Registration successful!"))
 	} else if r.Method == "GET" {
+		genres, err := GetGenres()
+		if err != nil {
+			http.Error(w, "Database error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		statuses, err := GetStatuses()
+		if err != nil {
+			http.Error(w, "Database error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 		rows, err := dbx.GetRoles_admin()
 		if err != nil {
 			log.Println("GetRoles error:", err)
@@ -96,6 +108,7 @@ func AdminPanel(w http.ResponseWriter, r *http.Request) {
 			ID   int
 			Name string
 		}
+
 		var roles []Role
 		for rows.Next() {
 			var r Role
@@ -105,11 +118,19 @@ func AdminPanel(w http.ResponseWriter, r *http.Request) {
 			}
 			roles = append(roles, r)
 		}
-
-		tmpl := template.Must(template.ParseFiles("front/templates/admin.html"))
-		if err := tmpl.Execute(w, roles); err != nil {
-			log.Println("Template execute error:", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		type TemplateData struct {
+			Genres   []Genre
+			Roles    []Role
+			Statuses []Status
+		}
+		data := TemplateData{
+			Genres:   genres,
+			Roles:    roles,
+			Statuses: statuses,
+		}
+		w.Header().Set("Content-Type", "text/html")
+		if err := tmpl.Execute(w, data); err != nil {
+			http.Error(w, "Template error: "+err.Error(), http.StatusInternalServerError)
 		}
 	}
 }

@@ -34,15 +34,17 @@
             </div>
             <div class="section-content">
                 <form id="userForm" method="POST" action="/admin" enctype="multipart/form-data">
+
                     <div class="form-group">
                         <label>Роль:
                         <select name="role_id" required>
-                            {{range .}}
+                            {{range .Roles}}
                             <option value="{{.ID}}">{{.Name}}</option>
                             {{end}}
                         </select>
                         </label><br>
                     </div>
+
                     <div class="form-group">
                         <label for="userName">Фамилия</label>
                         <input type="text" id="lastName" placeholder="Last name" required>
@@ -110,11 +112,32 @@
                     <span>Добавление нового фильма</span>
                 </div>
             </div>
+
             <div class="section-content">
                 <form id="movieForm">
                     <div class="form-group">
                         <label for="movieTitle">Название фильма</label>
                         <input type="text" id="movieTitle" placeholder="Введите название фильма" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Жанр:
+                        <select id="genreSelect" name="genre_id" required>
+                            {{range .Genres}}
+                            <option value="{{.ID}}">{{.Name}}</option>
+                            {{end}}
+                        </select>
+                        </label><br>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Статус:
+                        <select id="statusSelect" name="status_id" required>
+                            {{range .Statuses}}
+                            <option value="{{.ID}}">{{.Name}}</option>
+                            {{end}}
+                        </select>
+                        </label><br>
                     </div>
                     
                     <div class="form-group">
