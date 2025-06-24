@@ -19,6 +19,151 @@ document.addEventListener('DOMContentLoaded', function() {
     const filmTitle = document.getElementById('film-title');
     const filmInfo = document.getElementById('film-info');
 
+    let isEditing = false;
+    const editBtn = document.getElementById('edit-summary-btn');
+
+    // Функция для добавления кнопок удаления
+    function addDeleteButtons() {
+        // Для групп
+        document.querySelectorAll('#groups-table-body tr').forEach((row, index) => {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-sm btn-danger delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.dataset.index = index;
+            deleteBtn.dataset.type = 'group';
+            
+            const td = document.createElement('td');
+            td.appendChild(deleteBtn);
+            row.appendChild(td);
+        });
+        
+        // Для актеров
+        document.querySelectorAll('#actors-table-body tr').forEach((row, index) => {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-sm btn-danger delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.dataset.index = index;
+            deleteBtn.dataset.type = 'actor';
+            
+            const td = document.createElement('td');
+            td.appendChild(deleteBtn);
+            row.appendChild(td);
+        });
+        
+        // Обработчики удаления
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                const type = this.dataset.type;
+                
+                if (type === 'group') {
+                    filmGroups.splice(index, 1);
+                    updateSummary();
+                } else {
+                    actors.splice(index, 1);
+                    updateSummary1();
+                }
+                
+                updateTotalCost();
+            });
+        });
+    }
+
+    // Переключение режима редактирования
+    editBtn.addEventListener('click', function() {
+        isEditing = !isEditing;
+        
+        if (isEditing) {
+            this.textContent = 'Обновить информацию';
+            addDeleteButtons();
+        } else {
+            this.textContent = 'Редактировать информацию';
+            updateFilmDetails();
+        }
+    });
+
+    // Обновление информации на сервере
+    async function updateFilmDetails() {
+        if (!currentFilm) {
+            alert('Сначала выберите фильм');
+            return;
+        }
+        
+        const requestData = {
+            film_id: currentFilm.id,
+            groups: filmGroups.map(g => ({
+                id: g.id,
+                cost: g.cost
+            })),
+            actors: actors.map(a => ({
+                id: a.id,
+                cost1: a.cost1,
+                scenic: a.scenic
+            }))
+        };
+        
+        try {
+            const response = await fetch('/regisser/update_film', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Ошибка сервера');
+            }
+            
+            const result = await response.json();
+            showNotification('summary-notification', result.message);
+            
+            // Перезагружаем данные для обновления представления
+            loadFilmDetails(currentFilm.id);
+            
+        } catch (error) {
+            console.error('Ошибка обновления фильма:', error);
+            alert('Ошибка: ' + error.message);
+        }
+    }
+
+    async function loadFilmDetails(filmId) {
+        try {
+            const response = await fetch(`/regisser/film_details?film_id=${filmId}`);
+            if (!response.ok) {
+                throw new Error('Failed to load film details');
+            }
+            
+            const details = await response.json();
+            
+            // Защита от null/undefined
+            filmGroups = Array.isArray(details.groups) 
+                ? details.groups.map(g => ({
+                    id: g.id,
+                    name: g.name,
+                    cost: Number(g.cost) || 0
+                }))
+                : [];
+            
+            actors = Array.isArray(details.actors) 
+                ? details.actors.map(a => ({
+                    id: a.id,
+                    login: a.login,
+                    cost1: Number(a.cost1) || 0,
+                    scenic: a.scenic || ''
+                }))
+                : [];
+            
+            updateSummary();
+            updateSummary1();
+            updateTotalCost();
+            
+        } catch (error) {
+            console.error('[loadFilmDetails] Ошибка загрузки деталей фильма:', error);
+            alert('Ошибка загрузки информации о фильме');
+        }
+    }
+
+
     async function startFilm() {
         if (!currentFilm) {
             alert('Сначала выберите фильм');
@@ -38,11 +183,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })),
             actors: actors.map(a => ({
                 actor_id: a.id,
-                cost: a.cost1,
-                character_name: a.scenic
+                cost1: a.cost1,
+                scenic: a.scenic
             }))
         };
-        console.log(requestData)
 
         try {
             const response = await fetch('/regisser/start_film', {
@@ -73,6 +217,19 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Ошибка: ' + error.message);
         }
     }
+
+    selectFilmBtn.addEventListener('click', function() {
+        const filmId = filmSelect.value;
+        if (filmId) {
+            currentFilm = {
+                id: parseInt(filmId),
+                title: filmSelect.options[filmSelect.selectedIndex].textContent
+            };
+            filmTitle.textContent = currentFilm.title;
+            filmInfo.classList.remove('hidden');
+            loadFilmDetails(currentFilm.id);
+        }
+    });
 
     async function saveGroup() {
         const groupName = document.getElementById('group-name').value;
@@ -121,11 +278,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         
         if (!logA || !firstA || !lastA || !middleA || !birthA || !expA || !mailA || !phoneA) {
-            console.log(logA, firstA, lastA, middleA, birthA, expA, mailA, phoneA)
             alert('Please fill all fields correctly');
             return;
         }
-        console.log(logA, firstA, lastA, middleA, birthA, expA, mailA, phoneA)
 
         try {
             const response = await fetch('/regisser/add_actor', {
@@ -295,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedOption1 = actorSelect.options[actorSelect.selectedIndex];
         const actorId = actorSelect.value;
         const costInput1 = document.getElementById('actor-cost');
-        const scenic_name = document.getElementById('character-name').value.toString();
+        const scenic_name = document.getElementById('character-name').value.toLocaleString();
         
         if (!actorId) {
             alert('Пожалуйста, выберите актера');
@@ -319,6 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cost1: cost1,
             scenic: scenic_name,
         };
+        
         
         // Добавляем группу к текущему фильму
         if (currentFilm) {
@@ -383,37 +539,76 @@ document.addEventListener('DOMContentLoaded', function() {
         existingActorSection.classList.add('hidden');
     }
 
-    document.getElementById('start-film-btn').addEventListener('click', startFilm);
+    const startFilmBtn = document.getElementById('start-film-btn');
+    if (startFilmBtn) {
+        startFilmBtn.addEventListener('click', startFilm);
+    } else {
+        console.warn('Start film button not found');
+    }
     
     function updateSummary() {
         groupsTableBody.innerHTML = '';
-        filmGroups.forEach(group => {
+        filmGroups.forEach((group, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${group.name}</td>
-                <td>${group.cost.toLocaleString()} руб.</td>
+                <td>${group.cost.toString()} руб.</td>
             `;
             groupsTableBody.appendChild(row);
         });
+        
+        // Добавляем кнопки удаления в режиме редактирования
+        if (isEditing) {
+            addDeleteButtons();
+        }
     }
 
     function updateSummary1() {
+
+        const actorsTableBody = document.getElementById('actors-table-body');
+        if (!actorsTableBody) {
+            console.error('[updateSummary1] Элемент actors-table-body не найден');
+            return;
+        }
+        
         actorsTableBody.innerHTML = '';
+        
         actors.forEach(actor => {
             const row = document.createElement('tr');
+            
+            // Проверка и преобразование стоимости
+            const cost1 = Number(actor.cost1) || 0;
+            
             row.innerHTML = `
-                <td>${actor.login}</td>
-                <td>${actor.cost1.toLocaleString()} руб.</td>
-                <td>${actor.scenic}</td>
-            `;
+                <td>${actor.login || 'Неизвестный актер'}</td>
+                <td>${actor.scenic || 'Не указан'}</td>
+                <td>${cost1.toLocaleString()} руб.</td>
+            `;   
             actorsTableBody.appendChild(row);
         });
-    }    
+    }
 
     function updateTotalCost() {
-        const groupsCost = filmGroups.reduce((sum, group) => sum + group.cost, 0);
-        const actorsCost = actors.reduce((sum, actor) => sum + actor.cost1, 0);
+        const safeSum = (arr, key) => {
+            return arr.reduce((total, item) => {
+                // Преобразуем в число, если это строка
+                const value = typeof item[key] === 'string' 
+                    ? parseFloat(item[key].replace(/\s+/g, '')) 
+                    : Number(item[key]);
+                    
+                return total + (isNaN(value) ? 0 : value);
+            }, 0);
+        };
+
+        const groupsCost = safeSum(filmGroups, 'cost');
+        const actorsCost = safeSum(actors, 'cost1');
         const totalCost = groupsCost + actorsCost;
-        document.getElementById('total-cost').textContent = totalCost;
+
+        const totalElement = document.getElementById('total-cost');
+        if (totalElement) {
+            totalElement.textContent = totalCost.toLocaleString('ru-RU') + ' руб.';
+        } else {
+            console.error('Total cost element not found');
+        }
     }
 });

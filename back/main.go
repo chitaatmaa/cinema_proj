@@ -36,6 +36,8 @@ func main() {
 	http.HandleFunc("/regisser/add_group", handlers.AddGroupHandler)
 	http.HandleFunc("/regisser/add_actor", handlers.AddActorHandler)
 	http.HandleFunc("/regisser/start_film", handlers.StartFilmHandler)
+	http.HandleFunc("/regisser/film_details", handlers.FilmDetailsHandler)
+	http.HandleFunc("/regisser/update_film", handlers.UpdateFilmHandler)
 
 	log.Println("Server starting on :8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {

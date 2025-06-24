@@ -269,8 +269,8 @@ type FilmGroupRequest struct {
 
 type FilmActorRequest struct {
 	ActorID       int    `json:"actor_id"`
-	Cost          int    `json:"cost"`
-	CharacterName string `json:"character_name"`
+	Cost          int    `json:"cost1"`
+	CharacterName string `json:"scenic"`
 }
 
 type StartFilmRequest struct {

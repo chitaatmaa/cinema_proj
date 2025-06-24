@@ -178,55 +178,48 @@
                     <h2>Итоговая информация</h2>
                 </div>
                 
-                <div id="summary-content">
-                    <div class="notification" id="summary-notification">Выберите фильм для отображения информации</div>
+                <div class="summary-section">
+                    <h3>Итоговая информация</h3>
+                    <div id="summary-notification" class="notification"></div>
                     
                     <div id="film-info" class="hidden">
-                        <h3>Фильм: <span id="film-title">Название фильма</span></h3>
+                        <h4 id="film-title"></h4>
                         
-                        <div class="summary-section">
-                            <h3>Съемочные группы</h3>
-                            <table class="summary-table">
-                                <thead>
-                                    <tr>
-                                        <th>Название группы</th>
-                                        <th>Стоимость за смену</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="groups-table-body">
-                                    <!-- Groups will be added here -->
-                                </tbody>
-                            </table>
+                        <h5>Команды съемки</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Группа</th>
+                                    <th>Стоимость</th>
+                                </tr>
+                            </thead>
+                            <tbody id="groups-table-body"></tbody>
+                        </table>
+                        
+                        <h5>Актёры</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Актёр</th>
+                                    <th>Персонаж</th>
+                                    <th>Стоимость</th>
+                                </tr>
+                            </thead>
+                            <tbody id="actors-table-body"></tbody>
+                        </table>
+                        
+                        <div class="total-cost">
+                            <strong>Общая стоимость: <span id="total-cost">0</span></strong>
                         </div>
                         
-                        <div class="summary-section">
-                            <h3>Актеры</h3>
-                            <table class="summary-table">
-                                <thead>
-                                    <tr>
-                                        <th>Логин</th>
-                                        <th>Имя в фильме</th>
-                                        <th>Стоимость услуг</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="actors-table-body">
-                                    <!-- Actors will be added here -->
-                                </tbody>
-                            </table>
+                        <div class="mt-3">
+                            <button id="edit-summary-btn" class="btn btn-primary">
+                                Редактировать информацию
+                            </button>
+                            <button id="start-film-btn" class="btn btn-primary">
+                                Запустить фильм
+                            </button>
                         </div>
-                        
-                        <div class="summary-section">
-                            <h3>Общая информация</h3>
-                            <div class="form-group">
-                                <label>Общая стоимость за смену (в руб):</label>
-                                <div id="total-cost" class="total-cost">0</div>
-                            </div>
-                        </div>
-                        
-                        <button id="edit-summary-btn" class="btn-primary">
-                            <span>✏️</span> Редактировать информацию
-                        </button>
-                        <button type="button"  id="start-film-btn" class="btn">Запустить фильм</button>
                     </div>
                 </div>
             </div>
