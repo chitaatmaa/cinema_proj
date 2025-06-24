@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -228,4 +229,236 @@
 
     <script src="/static/js/regisser.js"></script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/regisser.css">
+    <title>Режиссерская панель</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Режиссерская панель</h1>
+            <p>Логин: <span id="regis_login" class="regis-name"></span></p>
+            <div class="dropdown-menu">
+                <a href="/logout">Выйти из системы</a>
+            </div>
+            <p class="subtitle">Управление съемочными группами, актерами и производством фильмов</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="panel">
+                <div class="panel-title">
+                    <span class="icon">🎬</span>
+                    <h2>Управление фильмами</h2>
+                </div>
+                
+                <div class="collapsible active">Фильмы режиссера</div>
+                <div class="collapsible-content active">
+                    <div class="form-group">
+                        <label for="film-select">Выберите фильм:</label>
+                        <select id="film-select">
+                            <option value="">-- Выберите фильм --</option>
+                            {{range .Films}}
+                            <option value="{{.ID}}">{{.Title}}</option>
+                            {{end}}
+                        </select>
+                    </div>
+                    
+                    <div class="notification" id="film-notification">Фильм успешно выбран!</div>
+                    
+                    <button type="button" id="select-film-btn" class="btn-primary">
+                        <span>📽️</span> Выбрать фильм
+                    </button>
+                </div>
+                
+                <div class="collapsible">Управление съемочными группами</div>
+                <div class="collapsible-content">
+                    <div class="form-group">
+                        <label for="group-action">Действие:</label>
+                        <select id="group-action">
+                            <option value="add">Добавить новую группу</option>
+                            <option value="select">Выбрать существующую группу</option>
+                        </select>
+                    </div>
+                    
+                    <div id="new-group-section">
+                        <div class="form-group">
+                            <label for="group-name">Название группы:</label>
+                            <input type="text" id="group-name" placeholder="Введите название группы">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="group-size">Количество человек в группе:</label>
+                            <input type="number" id="group-size" min="1" value="5">
+                        </div>
+                    </div>
+                    
+                    <div id="existing-group-section" class="hidden">
+                        <div class="notification" id="group-notification" style="display: none;"></div>
+                        <div class="form-group">
+                            <label for="existing-group">Выберите группу:</label>
+                            <select id="existing-group">
+                                <option value="">-- Выберите группу --</option>
+                                {{range .Groups}}
+                                <option value="{{.ID}}">{{.Name}} ({{.Count}} чел.)</option>
+                                {{end}}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="group-cost-section">
+                        <div class="form-group">
+                            <label for="group-cost">Стоимость за смену (руб.):</label>
+                            <input type="number" id="group-cost" min="0" value="25000">
+                        </div>
+                    </div>
+                    
+                    <button id="save-group-btn" class="btn-success">
+                        <span>💼</span> Сохранить группу
+                    </button>
+                </div>
+                
+                <div class="collapsible">Управление актерами</div>
+                <div class="collapsible-content">
+                    <div class="form-group">
+                        <label for="actor-action">Действие:</label>
+                        <select id="actor-action">
+                            <option value="add">Добавить нового актера</option>
+                            <option value="select">Выбрать существующего актера</option>
+                        </select>
+                    </div>
+                    
+                    <div id="new-actor-section">
+                        <div class="form-group">
+                            <label for="actor-login">Логин актера:</label>
+                            <input type="text" id="actor-login" placeholder="Введите логин">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="actor-first-name">Имя:</label>
+                            <input type="text" id="actor-first-name" placeholder="Введите имя">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="actor-last-name">Фамилия:</label>
+                            <input type="text" id="actor-last-name" placeholder="Введите фамилию">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="actor-middle-name">Отчество:</label>
+                            <input type="text" id="actor-middle-name" placeholder="Введите отчество">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="actor-birthdate">Дата рождения:</label>
+                            <input type="date" id="actor-birthdate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="actor-experience">Опыт работы (кол-во фильмов/сериалов):</label>
+                            <input type="number" id="actor-experience" min="0" value="5">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="actor-email">Email:</label>
+                            <input type="email" id="actor-email" placeholder="Введите email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="actor-phone">Телефон:</label>
+                            <input type="tel" id="actor-phone" placeholder="Введите телефон">
+                        </div>
+                    </div>
+                    
+                    <div id="existing-actor-section" class="hidden">
+                        <div class="form-group">
+                            <label for="existing-actor">Выберите актера (по логину):</label>
+                            <select id="existing-actor">
+                                <option value="">-- Выберите актера --</option>
+                                {{range .Actors}}
+                                <option value="{{.ID}}">
+                                    {{.Login}}
+                                </option>
+                                {{end}}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="actor-cost">Стоимость услуг (руб. за смену):</label>
+                            <input type="number" id="actor-cost" min="0" value="15000">
+                        </div>
+                        <div id="char-name" class="form-group">
+                            <label for="character-name">Имя в фильме:</label>
+                            <input type="text" id="character-name" placeholder="Введите имя персонажа">
+                        </div>
+                    </div>
+                    
+                    <div class="notification" id="actor-notification">Актер успешно добавлен!</div>
+                    
+                    <button type="button" id="save-actor-btn" class="btn-success">
+                        <span>🎭</span> Сохранить актера
+                    </button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">
+                    <span class="icon">📋</span>
+                    <h2>Итоговая информация</h2>
+                </div>
+                
+                <div class="summary-section">
+                    <h3>Итоговая информация</h3>
+                    <div id="summary-notification" class="notification"></div>
+                    
+                    <div id="film-info" class="hidden">
+                        <h4 id="film-title"></h4>
+                        
+                        <h5>Команды съемки</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Группа</th>
+                                    <th>Стоимость</th>
+                                </tr>
+                            </thead>
+                            <tbody id="groups-table-body"></tbody>
+                        </table>
+                        
+                        <h5>Актёры</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Актёр</th>
+                                    <th>Персонаж</th>
+                                    <th>Стоимость</th>
+                                </tr>
+                            </thead>
+                            <tbody id="actors-table-body"></tbody>
+                        </table>
+                        
+                        <div class="total-cost">
+                            <strong>Общая стоимость: <span id="total-cost">0</span></strong>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button id="edit-summary-btn" class="btn btn-primary">
+                                Редактировать информацию
+                            </button>
+                            <button id="start-film-btn" class="btn btn-primary">
+                                Запустить фильм
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/regisser.js"></script>
+</body>
+>>>>>>> 741fb8c1d90e4e1b14d660659e9dfa19713f6128
 </html>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Формы */
 .movie-form {
   display: grid;
@@ -43,4 +44,51 @@
 .character-assignment {
   display: flex;
   gap: 1rem;
+=======
+/* Формы */
+.movie-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-group {
+  flex: 1;
+}
+
+/* Таблицы */
+.crew-assignment-table {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.crew-assignment-table input[type="number"] {
+  width: 100px;
+}
+
+/* Кастинг актеров */
+.casting-container {
+  display: grid;
+  gap: 1rem;
+}
+
+.casting-lists {
+  display: flex;
+  gap: 2rem;
+}
+
+.available-actors, .assigned-actors {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.character-assignment {
+  display: flex;
+  gap: 1rem;
+>>>>>>> 741fb8c1d90e4e1b14d660659e9dfa19713f6128
 }

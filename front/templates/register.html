@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,4 +30,37 @@
     </form>
     <script src="/static/js/register.js"></script>
 </body>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/css/register.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <form method="POST" action="/register" enctype="multipart/form-data">
+        <label>Роль:
+            <select name="role_id" required>
+                {{range .}}
+                <option value="{{.ID}}">{{.Name}}</option>
+                {{end}}
+            </select>
+        </label><br>
+        
+        <label>Имя: <input type="text" name="first_name" required></label><br>
+        <label>Фамилия: <input type="text" name="last_name" required></label><br>
+        <label>Отчество: <input type="text" name="middle_name"></label><br>
+        <label>Дата рождения: <input type="date" name="birth_date" required></label><br>
+        <label>Фото: <input type="file" name="photo"></label><br>
+        <label>Опыт (лет): <input type="number" name="experience_years"></label><br>
+        <label>Логин: <input type="text" name="login" required></label><br>
+        <label>Пароль: <input type="password" name="pass" required></label><br>
+        
+        <button type="button" id="regUser">Зарегистрироваться</button>
+    </form>
+    <script src="/static/js/register.js"></script>
+</body>
+>>>>>>> 741fb8c1d90e4e1b14d660659e9dfa19713f6128
 </html>
