@@ -31,9 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     sessionStorage.setItem('UL', logine);
                     window.location.href = '/admin';
                 } else if (data.role_id == '1') {
-                    window.location.href = '/producer';                
+                    sessionStorage.setItem('UL', logine);
+                    window.location.href = `/producer?login=${encodeURIComponent(logine)}`;              
                 } else {
-                    window.location.href = '/regisser';                
+                    sessionStorage.setItem('UL', logine);
+                    window.location.href = `/regisser?login=${encodeURIComponent(logine)}`;              
                 }
             } else {
                 alert(data.error || 'Auth failed');

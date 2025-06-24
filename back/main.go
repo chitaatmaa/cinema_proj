@@ -31,6 +31,12 @@ func main() {
 	http.HandleFunc("/admin/prod_data", handlers.GetProdDataHandler)
 	http.HandleFunc("/admin/create_film", handlers.MovieHandler)
 
+	// Режиссерские роуты
+	http.HandleFunc("/regisser", handlers.RegisserMainHandler)
+	http.HandleFunc("/regisser/add_group", handlers.AddGroupHandler)
+	http.HandleFunc("/regisser/add_actor", handlers.AddActorHandler)
+	http.HandleFunc("/regisser/start_film", handlers.StartFilmHandler)
+
 	log.Println("Server starting on :8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
